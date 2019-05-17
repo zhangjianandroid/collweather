@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 因为遍历全国省市县的功能到后面还要频繁的复用，所以就不写在活动中，而是写到碎片里--><!-- 创建线性布局-->
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <!-- 在线性布局中包裹一个 相对布局-->
+    <!-- 首先先定义一个头布局作为标题栏，将高度设置为 actionBar的高度，背景设置为 colorPrimary-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+        <!-- 在相对布局中创建 俩个控件-->
+        <!-- 在头布局中放置 button用于执行返回操作，因为碎片中最好不要使用 actionBar或Toolbar，不然在复用的时候会有一些恶心的效果-->
+        <TextView
+            android:id="@+id/c14_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/c14_back_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/ic_back" />
+    </RelativeLayout>
+
+    <!--在线性布局中创建 listview-->
+    <!--该listview控件用于显示 省市县的数据，之所以使用listview而不是
+    用RecyclerView是因为listview会在每个子项中添加一条分割线-->
+    <ListView
+        android:id="@+id/c14_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</android.support.v7.widget.LinearLayoutCompat>
