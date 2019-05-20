@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.WeatherActivity">
+    tools:context=".activity.MainActivity">
 
     <!--加载碎片，在MainActivity中将 省市县级别的碎片加载进来-->
     <fragment
