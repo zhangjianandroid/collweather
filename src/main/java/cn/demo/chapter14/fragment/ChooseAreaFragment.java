@@ -2,10 +2,8 @@ package cn.demo.chapter14.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demo.chapter14.R;
-import cn.demo.chapter14.db.Demo01_City;
-import cn.demo.chapter14.db.Demo01_County;
-import cn.demo.chapter14.db.Demo01_Province;
+import cn.demo.chapter14.db.City;
+import cn.demo.chapter14.db.County;
+import cn.demo.chapter14.db.Province;
 import cn.demo.chapter14.utils.HttpUtils;
 import cn.demo.chapter14.utils.Utility;
 import okhttp3.Call;
@@ -59,18 +57,18 @@ public class ChooseAreaFragment extends Fragment {
     ArrayList dataList = new ArrayList<>();
 
 //    省列表
-    private List<Demo01_Province> provinceList;
+    private List<Province> provinceList;
 //    市列表
-    private List<Demo01_City> cityList;
+    private List<City> cityList;
 //    县列表
-    private List<Demo01_County> countyList;
+    private List<County> countyList;
 
 //    选中的省
-    private Demo01_Province selectedProvince;
+    private Province selectedProvince;
 //    选中的市
-    private Demo01_City selectedCity;
+    private City selectedCity;
 //    选中的县
-    private Demo01_County selectedCounty;
+    private County selectedCounty;
 //    当前选中的级别
     private int currentLevel;
 
@@ -157,13 +155,13 @@ public class ChooseAreaFragment extends Fragment {
         c14_back_button.setVisibility(View.GONE);
 //        先从数据库中进行读取
 //        利用 DataSupport 的 API 的findAll()方法进行查询，传入的参数是自定义JavaBean类的字节码对象。
-        provinceList = DataSupport.findAll(Demo01_Province.class);
+        provinceList = DataSupport.findAll(Province.class);
 //        如果 provinceList集合长度大于0，就表示数据库中有数据
         if (provinceList.size() > 0){
 //            先清空一下 data集合
             dataList.clear();
 //            对 省级数据进行遍历
-            for (Demo01_Province province : provinceList){
+            for (Province province : provinceList){
 //                将遍历到的每个省级名称都添加到 dataList集合中去
                 dataList.add(province.getProvinceName());
             }
@@ -195,10 +193,10 @@ public class ChooseAreaFragment extends Fragment {
 //         利用 DataSupport 的 API 的where方法进行条件查询。
 //              参数1：要查询的id, 参数2：自定义JavaBean类的字节码对象。
         cityList = DataSupport.where("provinceid = ?"
-                , String.valueOf(selectedProvince.getId())).find(Demo01_City.class);
+                , String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0){
             dataList.clear();
-            for (Demo01_City city: cityList){
+            for (City city: cityList){
                 dataList.add(city.getCityName());
             }
             adapter.notifyDataSetChanged();
@@ -219,10 +217,10 @@ public class ChooseAreaFragment extends Fragment {
         c14_title_text.setText(selectedCity.getCityName());
         c14_back_button.setVisibility(View.VISIBLE);
         countyList = DataSupport.where("cityid = ?",
-                String.valueOf(selectedCity.getId())).find(Demo01_County.class);
+                String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size() > 0){
             dataList.clear();
-            for (Demo01_County county : countyList){
+            for (County county : countyList){
                 dataList.add(county.getCountyName());
             }
             adapter.notifyDataSetChanged();

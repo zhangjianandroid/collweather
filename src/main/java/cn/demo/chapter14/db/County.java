@@ -12,7 +12,7 @@ import org.litepal.crud.DataSupport;
  *
  * @version 1.0
  */
-public class Demo01_County extends DataSupport {
+public class County extends DataSupport {
     private int id;
     private String countyName;
     private String weatherId;

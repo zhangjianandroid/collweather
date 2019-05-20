@@ -4,9 +4,9 @@
     <version value="1"/>
     <list>
         <!--根据对象关系映射，自动生成数据库表-->
-        <mapping class="cn.demo.chapter14.db.Demo01_Province"/>
-        <mapping class="cn.demo.chapter14.db.Demo01_City"/>
-        <mapping class="cn.demo.chapter14.db.Demo01_County"/>
+        <mapping class="cn.demo.chapter14.db.Province"/>
+        <mapping class="cn.demo.chapter14.db.City"/>
+        <mapping class="cn.demo.chapter14.db.County"/>
 
     </list>
 </litepal>

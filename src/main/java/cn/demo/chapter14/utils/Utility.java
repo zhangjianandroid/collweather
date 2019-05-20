@@ -6,9 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.demo.chapter14.db.Demo01_City;
-import cn.demo.chapter14.db.Demo01_County;
-import cn.demo.chapter14.db.Demo01_Province;
+import cn.demo.chapter14.db.City;
+import cn.demo.chapter14.db.County;
+import cn.demo.chapter14.db.Province;
 
 /**
  * 项目名称：2018_AndroidStudio_ FirstLineOfCode_No.2
@@ -45,14 +45,14 @@ public class Utility {
                     JSONObject province_jsonObject = allProvinces.getJSONObject(i);
 //                5.0 因为要将从服务器中返回来的数据 存储到 自定义Java Bean对象中，所以要 new出这个
 //                    Demo01_Province实例化对象。
-                    Demo01_Province province = new Demo01_Province();
+                    Province province = new Province();
 //                6.0 通过 province_jsonObject 每个jsonObject对象，拿到每个对象所对应的 具体字段(参数：name)。
                     String name = province_jsonObject.getString("name");
-//                6.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Demo01_Province 对象。
+//                6.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Province 对象。
                     province.setProvinceName(name);
 //                7.0 通过 provinceObject 每个jsonObject对象，拿到每个对象所对应的 具体字段(参数：id)。
                     int id = province_jsonObject.getInt("id");
-//                7.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Demo01_Province 对象。
+//                7.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Province 对象。
                     province.setProvinceCode(id);
 //                8.0 然后在将获取到的每个字段 都保存到 province对象中，从而为在数据库中生成做准备。
                     province.save();
@@ -77,7 +77,7 @@ public class Utility {
                 JSONArray allCites = new JSONArray(response);
                 for (int i = 0; i < allCites.length(); i++){
                     JSONObject citesObject = allCites.getJSONObject(i);
-                    Demo01_City city = new Demo01_City();
+                    City city = new City();
                     String name = citesObject.getString("name");
                     city.setCityName(name);
                     int id = citesObject.getInt("id");
@@ -106,7 +106,7 @@ public class Utility {
                 JSONArray allCountys = new JSONArray(response);
                 for (int i=0; i<allCountys.length(); i++){
                     JSONObject countysObject = allCountys.getJSONObject(i);
-                    Demo01_County county = new Demo01_County();
+                    County county = new County();
                     String name = countysObject.getString("name");
                     county.setCountyName(name);
                     String weather_id = countysObject.getString("weather_id");
