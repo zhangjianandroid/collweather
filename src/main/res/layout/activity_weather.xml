@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- 天气界面-->
+<?xml version="1.0" encoding="utf-8"?><!-- 天气界面-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,30 +7,54 @@
     android:background="@color/colorPrimary"
     tools:context=".activity.WeatherActivity">
 
-    <!-- 使用scrollview控件可以划出屏幕以外的内容-->
-    <!-- 因为 scrollview里面只能有一个子布局，所以使用垂直的LinearLayout来包裹将要显示的内容-->
-    <ScrollView
-        android:id="@+id/c14_weather_layout"
+    <!-- 添加一个滑动菜单，用于隐藏所有的天气-->
+    <!-- 该滑动菜单中的第一个子控件作为主屏幕中显示的内容-->
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/c14_drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+
+        <!-- 添加下拉刷新功能-->
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/c14_swipe_refresh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <!-- 标题-->
-            <include layout="@layout/title" />
-            <!-- 天气状态-->
-            <include layout="@layout/now" />
-            <!-- 预报-->
-            <include layout="@layout/forecast" />
-            <!-- 空气质量-->
-            <include layout="@layout/aqi" />
-            <!-- 生活建议-->
-            <include layout="@layout/suggestion" />
-        </LinearLayout>
+            android:layout_height="match_parent">
 
-    </ScrollView>
+            <!-- 使用scrollview控件可以划出屏幕以外的内容-->
+            <!-- 因为 scrollview里面只能有一个子布局，所以使用垂直的LinearLayout来包裹将要显示的内容-->
+            <ScrollView
+                android:id="@+id/c14_weather_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <!-- 标题-->
+                    <include layout="@layout/title" />
+                    <!-- 天气状态-->
+                    <include layout="@layout/now" />
+                    <!-- 预报-->
+                    <include layout="@layout/forecast" />
+                    <!-- 空气质量-->
+                    <include layout="@layout/aqi" />
+                    <!-- 生活建议-->
+                    <include layout="@layout/suggestion" />
+                </LinearLayout>
+
+            </ScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <!-- 滑动菜单中第二个控件的位置用于添加遍历省市县数据的碎片-->
+        <fragment
+            android:id="@+id/c14_choose_area_fragment"
+            android:name="cn.demo.chapter14.fragment.ChooseAreaFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start" />
+    </android.support.v4.widget.DrawerLayout>
 </FrameLayout>

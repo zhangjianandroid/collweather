@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demo.chapter14.R;
+import cn.demo.chapter14.activity.MainActivity;
 import cn.demo.chapter14.activity.WeatherActivity;
 import cn.demo.chapter14.db.City;
 import cn.demo.chapter14.db.County;
 import cn.demo.chapter14.db.Province;
+import cn.demo.chapter14.gson.Weather;
 import cn.demo.chapter14.utils.HttpUtils;
 import cn.demo.chapter14.utils.Utility;
 import okhttp3.Call;
@@ -74,6 +77,7 @@ public class ChooseAreaFragment extends Fragment {
     private int currentLevel;
 
 
+    private DrawerLayout c14_drawer_layout;
     /***
      * 当碎片创建视图（加载布局）的时候调用。
      * @param inflater 填充哪个布局文件
@@ -90,6 +94,7 @@ public class ChooseAreaFragment extends Fragment {
         c14_title_text = (TextView) view.findViewById(R.id.c14_title_text);
         c14_back_button = (Button) view.findViewById(R.id.c14_back_button);
         c14_list_view = (ListView) view.findViewById(R.id.c14_list_view);
+
 //       !!! 3.0 创建 ArrayAdapter适配器
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, dataList);
 //       !!! 4.0 ArrayAdapter适配器设置给 listview
@@ -105,6 +110,7 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 //        1.0 给 listview设置点击事件，当点击某个省的时候，会进入 ListView的 onItemClik方法。
 //        这个时候要根据当前的级别来判断是去调用 市级 还是 县级。
         c14_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,14 +133,30 @@ public class ChooseAreaFragment extends Fragment {
                 else if(currentLevel == LEVEL_COUNTY){
 //                    先从集合中获取每个县城具体的 id
                     String weatherId = countyList.get(position).getWeatherId();
+                    /***
+                     * 设置判断当前如果时 MainActivity界面的时候，就跳转到 WeatherActivity界面
+                     */
+                    if (getActivity() instanceof MainActivity){
 //                    再通过意图跳转的方式显示具体的 县城城市的天气
-                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
 //                    跳转时将该 weather_id具体的县城ID 作为参数传递到 WeatherActivity界面
-                    intent.putExtra("weather_id", weatherId);
+                        intent.putExtra("weather_id", weatherId);
 //                    进行跳转
-                    startActivity(intent);
+                        startActivity(intent);
 //                    成功跳转后，销毁当前活动。
-                    getActivity().finish();
+                        getActivity().finish();
+                    /***
+                     * 如果当前是 WeatherActivity界面，只需要重新加载该界面，重新获取天气信息即可
+                     */
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+//                        切记：下面的 c14_drawer_layout，c14_swipe_refresh，requestWeather()修饰符
+//                        必须公共的，才能在该类中被调用。
+                        activity.c14_drawer_layout.closeDrawers();
+                        activity.c14_swipe_refresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
+
                 }
             }
         });

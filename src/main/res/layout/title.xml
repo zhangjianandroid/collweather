@@ -3,6 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
 
+    <!-- 设置一个用于切换城市的按钮-->
+    <Button
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/c14_nav_button"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/ic_home"
+        />
     <!-- 显示 县城的名称-->
     <TextView
         android:id="@+id/c14_title_city"
