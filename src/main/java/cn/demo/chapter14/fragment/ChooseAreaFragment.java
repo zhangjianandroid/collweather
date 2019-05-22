@@ -2,6 +2,7 @@ package cn.demo.chapter14.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.demo.chapter14.R;
+import cn.demo.chapter14.activity.WeatherActivity;
 import cn.demo.chapter14.db.City;
 import cn.demo.chapter14.db.County;
 import cn.demo.chapter14.db.Province;
@@ -62,7 +64,6 @@ public class ChooseAreaFragment extends Fragment {
     private List<City> cityList;
 //    县列表
     private List<County> countyList;
-
 //    选中的省
     private Province selectedProvince;
 //    选中的市
@@ -109,19 +110,31 @@ public class ChooseAreaFragment extends Fragment {
         c14_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                如果当前 是 省级别，就查询 position位置上的这个省级别下的所有 市级。
+//                如果当前是 PROVINCE省级别，就查询 position位置上的这个省级别下的所有 市级。
                 if (currentLevel == LEVEL_PROVINCE){
 //                    获取每个省级别的 position位置
                     selectedProvince = provinceList.get(position);
-                    Toast.makeText(getActivity(), "当前点击的是："+selectedProvince.getProvinceName(), Toast.LENGTH_SHORT).show();
 //                    查询当前 position省级下的 所有市级
                     queryCites();
-//                    如果当前 是 市级别，就查询 position位置上的这个省级别下的所有 县级。
+//                    如果当前 是 CITY市级别，就查询 position位置上的这个省级别下的所有 县级。
                 }else if (currentLevel == LEVEL_CITY){
 //                    获取到每个市级的 position位置
                     selectedCity = cityList.get(position);
 //                    查询当前 position市级下的 所有县级
                     queryCounties();
+                }
+//                如果当前级别是：COUNTY县城级别，就启动天气界面进行具体的天气查询
+                else if(currentLevel == LEVEL_COUNTY){
+//                    先从集合中获取每个县城具体的 id
+                    String weatherId = countyList.get(position).getWeatherId();
+//                    再通过意图跳转的方式显示具体的 县城城市的天气
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+//                    跳转时将该 weather_id具体的县城ID 作为参数传递到 WeatherActivity界面
+                    intent.putExtra("weather_id", weatherId);
+//                    进行跳转
+                    startActivity(intent);
+//                    成功跳转后，销毁当前活动。
+                    getActivity().finish();
                 }
             }
         });
@@ -185,7 +198,6 @@ public class ChooseAreaFragment extends Fragment {
      * 查询选中的省中的所有的市级，优先从数据中查询，如果查询不到再从服务器中查询
      */
     private void queryCites() {
-        int num = 0;
 //        标题 设置为被点击的省
         c14_title_text.setText(selectedProvince.getProvinceName());
         c14_back_button.setVisibility(View.VISIBLE);
@@ -276,10 +288,12 @@ public class ChooseAreaFragment extends Fragment {
                     result = Utility.handleProvinceResponse(responseText);
                 }else if("city".equals(type)){
 //                    因为只有这个方法返回 true的时候才能查询到 服务器返回的 市级数据
-                    result = Utility.handleCityResponse(responseText, selectedProvince.getId());
+                    result = Utility.handleCityResponse(responseText,
+                            selectedProvince.getId());
                 }else if("county".equals(type)){
 //                    因为只有这个方法返回 true的时候才能查询到 服务器返回的 县级数据
-                    result = Utility.handleCountyResponse(responseText, selectedCity.getId());
+                    result = Utility.handleCountyResponse(responseText,
+                            selectedCity.getId());
                 }
                 if (result){
 //                    因为子线程不能刷新UI，所以要切换到主线程去做刷新UI的操作。

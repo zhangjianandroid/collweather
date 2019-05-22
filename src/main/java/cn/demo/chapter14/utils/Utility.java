@@ -2,6 +2,8 @@ package cn.demo.chapter14.utils;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +11,7 @@ import org.json.JSONObject;
 import cn.demo.chapter14.db.City;
 import cn.demo.chapter14.db.County;
 import cn.demo.chapter14.db.Province;
+import cn.demo.chapter14.gson.Weather;
 
 /**
  * 项目名称：2018_AndroidStudio_ FirstLineOfCode_No.2
@@ -47,13 +50,11 @@ public class Utility {
 //                    Demo01_Province实例化对象。
                     Province province = new Province();
 //                6.0 通过 province_jsonObject 每个jsonObject对象，拿到每个对象所对应的 具体字段(参数：name)。
-                    String name = province_jsonObject.getString("name");
 //                6.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Province 对象。
-                    province.setProvinceName(name);
+                    province.setProvinceName(province_jsonObject.getString("name"));
 //                7.0 通过 provinceObject 每个jsonObject对象，拿到每个对象所对应的 具体字段(参数：id)。
-                    int id = province_jsonObject.getInt("id");
 //                7.1 然后将从服务器中解析出来的 这个对象的具体name字段的值 设置给 Province 对象。
-                    province.setProvinceCode(id);
+                    province.setProvinceCode(province_jsonObject.getInt("id"));
 //                8.0 然后在将获取到的每个字段 都保存到 province对象中，从而为在数据库中生成做准备。
                     province.save();
                 }
@@ -107,10 +108,8 @@ public class Utility {
                 for (int i=0; i<allCountys.length(); i++){
                     JSONObject countysObject = allCountys.getJSONObject(i);
                     County county = new County();
-                    String name = countysObject.getString("name");
-                    county.setCountyName(name);
-                    String weather_id = countysObject.getString("weather_id");
-                    county.setWeatherId(weather_id);
+                    county.setCountyName(countysObject.getString("name"));
+                    county.setWeatherId(countysObject.getString("weather_id"));
                     county.setCityId(cityId);
                     county.save();
                 }
@@ -120,5 +119,24 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /***
+     * 用于 解析天气的JSON数据 的方法
+     *      将返回来的JSON数据解析成Wather实体类
+     * @param response
+     * @return
+     */
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            Weather weather = new Gson().fromJson(weatherContent, Weather.class);
+            return weather;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
