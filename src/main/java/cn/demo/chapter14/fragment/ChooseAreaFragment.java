@@ -71,13 +71,10 @@ public class ChooseAreaFragment extends Fragment {
     private Province selectedProvince;
 //    选中的市
     private City selectedCity;
-//    选中的县
-    private County selectedCounty;
+
 //    当前选中的级别
     private int currentLevel;
 
-
-    private DrawerLayout c14_drawer_layout;
     /***
      * 当碎片创建视图（加载布局）的时候调用。
      * @param inflater 填充哪个布局文件
@@ -121,7 +118,7 @@ public class ChooseAreaFragment extends Fragment {
 //                    获取每个省级别的 position位置
                     selectedProvince = provinceList.get(position);
 //                    查询当前 position省级下的 所有市级
-                    queryCites();
+                    queryCities();
 //                    如果当前 是 CITY市级别，就查询 position位置上的这个省级别下的所有 县级。
                 }else if (currentLevel == LEVEL_CITY){
 //                    获取到每个市级的 position位置
@@ -156,7 +153,6 @@ public class ChooseAreaFragment extends Fragment {
                         activity.c14_swipe_refresh.setRefreshing(true);
                         activity.requestWeather(weatherId);
                     }
-
                 }
             }
         });
@@ -167,7 +163,7 @@ public class ChooseAreaFragment extends Fragment {
 //                  如果当前 返回的按钮位于 县级别的窗口，点击返回按钮后，就会返回 市级别的列表
                   if (currentLevel == LEVEL_COUNTY){
 //                      就查询 市级
-                        queryCites();
+                      queryCities();
 //                   如果当前 返回的按钮位于 市级别的窗口，那么点击返回按钮后，就会返回 省级别的列表
                    }else if (currentLevel == LEVEL_CITY){
                        queryProvinces();
@@ -219,7 +215,7 @@ public class ChooseAreaFragment extends Fragment {
      * 查询 市级
      * 查询选中的省中的所有的市级，优先从数据中查询，如果查询不到再从服务器中查询
      */
-    private void queryCites() {
+    private void queryCities() {
 //        标题 设置为被点击的省
         c14_title_text.setText(selectedProvince.getProvinceName());
         c14_back_button.setVisibility(View.VISIBLE);
@@ -275,22 +271,9 @@ public class ChooseAreaFragment extends Fragment {
      * @param type 具体的类型：是省级，还是市级，还是县级。
      */
     private void queryFromServer(String address, final String type) {
+        showProgressDialog();
 //        利用HttpUtils工具类，向服务器发送请求
         HttpUtils.sendOkHttpRequest(address, new Callback() {
-//            服务器访问失败的时候调用
-            @Override
-            public void onFailure(Call call, IOException e) {
-//                Android不允许在子线程中去做更新UI的操作，所以要通
-//	              过 runOnUiThread方法，将线程切换到主线程去更新UI
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getActivity().getApplication(), "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
             /***
              *  服务器访问成功的时候调用
              *【响应的数据会回调 onResponse()方法中】
@@ -326,13 +309,27 @@ public class ChooseAreaFragment extends Fragment {
                             if ("province".equals(type)){
                                 queryProvinces();
                             }else if("city".equals(type)){
-                                queryCites();
+                                queryCities();
                             }else if("county".equals(type)){
                                 queryCounties();
                             }
                         }
                     });
                 }
+            }
+
+            //            服务器访问失败的时候调用
+            @Override
+            public void onFailure(Call call, IOException e) {
+//                Android不允许在子线程中去做更新UI的操作，所以要通
+//	              过 runOnUiThread方法，将线程切换到主线程去更新UI
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getActivity().getApplication(), "加载失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }

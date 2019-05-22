@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prfs = PreferenceManager.getDefaultSharedPreferences(this);
 //        先从 prfs读取缓存数据，如果不为null,就说明之前已经请求过天气数
 //        据了，没必要再让用户再次选择城市，而是直接跳转到 天气界面
-        if (prfs.getString("weather", null) !=null){
+        if (prfs.getString("weather", null) != null){
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();

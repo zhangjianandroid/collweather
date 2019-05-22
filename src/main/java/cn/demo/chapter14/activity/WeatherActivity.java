@@ -1,5 +1,6 @@
 package cn.demo.chapter14.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,18 +16,21 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.IOException;
 
 import cn.demo.chapter14.R;
 import cn.demo.chapter14.gson.Forecast;
 import cn.demo.chapter14.gson.Weather;
+import cn.demo.chapter14.service.AutoUpdateService;
 import cn.demo.chapter14.utils.HttpUtils;
 import cn.demo.chapter14.utils.Utility;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
+public class WeatherActivity extends AppCompatActivity  {
 
     private TextView c14_title_city;
     private TextView c14_title_update_time;
@@ -110,8 +114,6 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 requestWeather(weatherById);
             }
         });
-
-
     }
 
     /***
@@ -185,48 +187,55 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     public void showWeatherInfo(Weather weather) {
 //        从 Weather对象中获取数据，然后显示到相应的控件上。
 //          城市的名字
-        String cityName = weather.basic.cityName;
+            String cityName = weather.basic.cityName;
 //        更新天气的时间，通过split进行截取
-        String updateTime = weather.basic.update.updateTime.split(" ")[1];
+            String updateTime = weather.basic.update.updateTime.split(" ")[1];
 //        温度
-        String degree = weather.now.temperature + "°C";
+            String degree = weather.now.temperature + "°C";
 //        天气信息
-        String weatherInfo = weather.now.more.info;
-        c14_title_city.setText(cityName);
-        c14_title_update_time.setText(updateTime);
-        c14_degree_text.setText(degree);
-        c14_weather_info_text.setText(weatherInfo);
+            String weatherInfo = weather.now.more.info;
+            c14_title_city.setText(cityName);
+            c14_title_update_time.setText(updateTime);
+            c14_degree_text.setText(degree);
+            c14_weather_info_text.setText(weatherInfo);
 
-        c14_forecast_layout.removeAllViews();
+            c14_forecast_layout.removeAllViews();
 //        注意在未来天气预报的部分我们使用一个for循环来处理每天的天气信息，
 //        在循环中动态加载 forecast_item布局并设置相应的数据，然后添加到父布局中去，
-        for (Forecast forecast : weather.forecastList) {
-            View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, c14_forecast_layout, false);
-            TextView dataText = view.findViewById(R.id.c14_date_text);
-            TextView infoText = view.findViewById(R.id.c14_info_text);
-            TextView maxText = view.findViewById(R.id.c14_max_text);
-            TextView minText = view.findViewById(R.id.min_text);
+            for (Forecast forecast : weather.forecastList) {
+                View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, c14_forecast_layout, false);
+                TextView dataText = view.findViewById(R.id.c14_date_text);
+                TextView infoText = view.findViewById(R.id.c14_info_text);
+                TextView maxText = view.findViewById(R.id.c14_max_text);
+                TextView minText = view.findViewById(R.id.min_text);
 
-            dataText.setText(forecast.date);
-            infoText.setText(forecast.more.info);
-            maxText.setText(forecast.temperature.max);
-            minText.setText(forecast.temperature.min);
-            c14_forecast_layout.addView(view);
-        }
+                dataText.setText(forecast.date);
+                infoText.setText(forecast.more.info);
+                maxText.setText(forecast.temperature.max);
+                minText.setText(forecast.temperature.min);
+                c14_forecast_layout.addView(view);
+            }
 
-        if (weather.aqi != null) {
-            c14_aqi_text.setText(weather.aqi.city.aqi);
-            c14_pm25_text.setText(weather.aqi.city.pm25);
-        }
+            if (weather.aqi != null) {
+                c14_aqi_text.setText(weather.aqi.city.aqi);
+                c14_pm25_text.setText(weather.aqi.city.pm25);
+            }
 
-        String comfort = "舒适度：\n" + weather.suggestion.comfort.info;
-        String carWash = "洗车指数：\n" + weather.suggestion.carWash.info;
-        String sport = "运动指数：\n" + weather.suggestion.sport.info;
-        c14_comfort_text.setText(comfort);
-        c14_car_wash_text.setText(carWash);
-        c14_sport_text.setText(sport);
+            String comfort = "舒适度：\n" + weather.suggestion.comfort.info;
+            String carWash = "洗车指数：\n" + weather.suggestion.carWash.info;
+            String sport = "运动指数：\n" + weather.suggestion.sport.info;
+            c14_comfort_text.setText(comfort);
+            c14_car_wash_text.setText(carWash);
+            c14_sport_text.setText(sport);
 //      以上设置完成后，再将ScrollView重新变成可见的。
-        c14_weather_layout.setVisibility(View.VISIBLE);
+            c14_weather_layout.setVisibility(View.VISIBLE);
+        if (weather != null && "ok".equals(weather.status)){
+            Intent intent = new Intent(this, AutoUpdateService.class);
+            startService(intent);
+        }else{
+            Toast.makeText(this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
@@ -248,19 +257,10 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         c14_swipe_refresh = (SwipeRefreshLayout) findViewById(R.id.c14_swipe_refresh);
 
         c14_nav_button = (Button) findViewById(R.id.c14_nav_button);
-        c14_nav_button.setOnClickListener(this);
         c14_drawer_layout = (DrawerLayout) findViewById(R.id.c14_drawer_layout);
-        c14_drawer_layout.setOnClickListener(this);
 
     }
 
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.c14_nav_button:
 
-                break;
-        }
-    }
 }

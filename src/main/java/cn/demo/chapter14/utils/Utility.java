@@ -79,11 +79,8 @@ public class Utility {
                 for (int i = 0; i < allCites.length(); i++){
                     JSONObject citesObject = allCites.getJSONObject(i);
                     City city = new City();
-                    String name = citesObject.getString("name");
-                    city.setCityName(name);
-                    int id = citesObject.getInt("id");
-                    city.setCityCode(id);
-
+                    city.setCityName(citesObject.getString("name"));
+                    city.setCityCode(citesObject.getInt("id"));
                     city.setProvinceId(provinceId);
                     city.save();
                 }
